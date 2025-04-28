@@ -1,0 +1,99 @@
+import java.util.Scanner;
+
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+public class Main {
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+
+        /**
+         * input width of wall
+         * check if width is in the right perimeters
+         */
+
+        System.out.println("Enter the width of the house: ");
+        int width = scanner.nextInt();
+        boolean wrongWidth = true;
+        while (wrongWidth) {
+            if (width < 9 || width % 2 == 0) {
+                System.out.println("Invalid width. please try again");
+                width = scanner.nextInt();
+            }
+            else {
+                wrongWidth = false;
+            }
+
+        }
+
+        /**
+         * input height of wall
+         * check if height is in the right perimeters
+         */
+
+        System.out.println("Enter the height of the house: ");
+        int height = scanner.nextInt();
+        boolean wrongHeight = true;
+        while (wrongHeight) {
+            if (height < 4) {
+                System.out.println("Invalid height. please try again");
+                height = scanner.nextInt();
+            }
+            else {
+                wrongHeight = false;
+                }
+
+            }
+
+        /**
+         * input wall & roof char
+         */
+
+        System.out.println("Enter the char for the house walls: ");
+        char wallChar = scanner.next().charAt(0);
+        System.out.println("Enter the char for the house roof: ");
+        char roofChar = scanner.next().charAt(0);
+
+        /**
+         * draw the roof
+         */
+
+        for (int i = 0; i < (width/2) + 1 ; i++ ) {
+            int rangerValue = (width/2)-i;
+            for (int j = 0; j < width; j++) {
+                if (rangerValue <= j && j < (width- rangerValue)) {
+                    System.out.print(roofChar);
+                }
+                else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
+
+        /**
+         * draw windows and walls
+         */
+
+        int windowsRange = (width-5)/2;
+        for (int j = 0 ; j < height; j++){
+            int i = 0;
+            while (i < width) {
+                if (i==0 || j==0 || i == width-1 || j == height-1) {
+                    System.out.print(wallChar);
+                }
+                else if (j==2 && i == windowsRange) {
+                    System.out.print("[] []");
+                    i += 4;
+                }
+                else {
+                    System.out.print(" ");
+                }
+                i++;
+            }
+            System.out.println();
+        }
+
+    }
+
+}
