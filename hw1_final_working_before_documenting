@@ -1,0 +1,180 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+    public static Scanner scanner; // Note: Do not change this line.
+    public static int currentSize = 0;
+    /**
+     * main menu function
+     */
+    public static String mainMenu(){
+        String choice = "-1";
+        while (!choice.equals("1") && !choice.equals("2") && !choice.equals("3")
+                && !choice.equals("4") && !choice.equals("5") ) {
+            System.out.println("1. Add a new movie");
+            System.out.println("2. Display all movies");
+            System.out.println("3. Display movie rating");
+            System.out.println("4. Find the best director");
+            System.out.println("5. Exit");
+            System.out.println("Please enter your choice:");
+            choice = scanner.nextLine();
+            if (!choice.equals("1") && !choice.equals("2") && !choice.equals("3")
+                    && !choice.equals("4") && !choice.equals("5") ) {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        }
+        return choice;
+    }
+
+    /**
+     * Does the movie exist
+     */
+    public static int movieExist(String[][] moviesArray, String movieName) {
+        for (int i = 0; i < currentSize; i++) {
+            if (moviesArray[i][0] != null && moviesArray[i][0].equals(movieName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * find the best director (mean and name)
+     */
+
+    public static String[] bestDirector(String[][] moviesArray) {
+        double maxMean= -1;
+        String bestDirector = "";
+        for (int i = 0; i < currentSize; i++) {
+            String director = moviesArray[i][2];
+            double sum = 0;
+            int count = 0;
+            for (int j = 0; j < currentSize; j++) {
+                if (moviesArray[j][2]!= null && moviesArray[j][2].equals(director)) {
+                    sum += Double.parseDouble(moviesArray[j][1]);
+                    count ++;
+                }
+            }
+            double tempMean = sum / count;
+            if (tempMean > maxMean) {
+                maxMean = tempMean;
+                bestDirector= director;
+            }
+        }
+        double maxMeanRounded = Math.round(maxMean * 100.0) / 100.0;
+        return new String[] {bestDirector, String.format("%.2f", maxMeanRounded)};
+    }
+
+    /**
+     * manage between the four choices
+     * @param choice
+     * @param moviesArray
+     */
+
+    public static void manageChoice(String choice, String[][] moviesArray) {
+        if (choice.equals("1")) {
+            System.out.println("Enter movie name:");
+            String movieName = scanner.nextLine();
+
+            System.out.println("Enter rating:");
+            double movieRating = scanner.nextDouble();
+            scanner.nextLine();
+            if (movieRating < 0 || movieRating > 10) {
+                System.out.println("Invalid rating");
+                return;
+            } else {
+                System.out.println("Enter director name:");
+                String movieDirector = scanner.nextLine();
+                int movieLine = movieExist(moviesArray, movieName);
+                if (movieLine != -1) {
+                    moviesArray[movieLine][1] = String.valueOf(movieRating);
+                    System.out.println(movieName + " added successfully!");
+                } else {
+                    if (currentSize == 100) {
+                        System.out.println("Movies limit reached.");
+                        return;
+                    } else {
+                        moviesArray[currentSize][0] = movieName;
+                        moviesArray[currentSize][1] = String.valueOf(movieRating);
+                        moviesArray[currentSize][2] = movieDirector;
+                        currentSize++;
+                        System.out.println("Movie " + movieName + " added successfully!");
+                    }
+
+                }
+            }
+        }
+        else if (choice.equals("2")) {
+            if (currentSize == 0) {
+                System.out.println("No movies are available. ");
+            }
+            else {
+                for (int i = 0; i < currentSize; i++) {
+                    System.out.println("Name: " + moviesArray[i][0] + " rating: " + moviesArray[i][1] + " director: " + moviesArray[i][2]);
+                }
+            }
+        }
+        else if (choice.equals("3")) {
+            System.out.println("Enter movie name:");
+            String movieForRating = scanner.nextLine();
+            int i = movieExist(moviesArray, movieForRating);
+            if (i == -1) {
+                System.out.println("No movie found with name " + movieForRating);
+            } else {
+                System.out.println("Rating for " + movieForRating + ": " + moviesArray[i][1]);
+            }
+
+        }
+        else if (choice.equals("4")) {
+            if (currentSize <= 0) {
+                System.out.println("No movies are available. ");
+            }
+            else {
+                String[] result = bestDirector(moviesArray);
+                System.out.println("Best director: " + result[0] + " with an average rating of: " + result[1]);
+            }
+        }
+    }
+
+
+    public static void manageMovies() {
+        /**
+         * Creating a two-dimensional array that contains information about the movie's name, rating, and director's name.
+         */
+        String[][] moviesArray = new String[100][3];
+        /**
+         * Receiving the user's choice, validating it, and proceeding
+         */
+        System.out.println("Welcome to the Movies Management System!.");
+        while (true) {
+            String choice = mainMenu();
+            if (choice.equals("5")) {
+                System.out.println("Exiting the program. Goodbye!");
+                currentSize = 0;
+                break;
+            }
+            manageChoice(choice, moviesArray);
+        }
+
+    }
+    public static void main(String[] args) throws IOException {
+        String path = args[0];
+
+        scanner = new Scanner(new File(path));
+        int numberOfTests = scanner.nextInt();
+        scanner.nextLine();
+
+        for (int i = 1; i <= numberOfTests; i++) {
+            System.out.println("Test number " + i + " starts.");
+            try {
+                manageMovies();
+            } catch(Exception e){
+                System.out.println("Exception " + e);
+            }
+            System.out.println("Test number " + i + " ended.");
+            System.out.println("-----------------------------------------------");
+        }
+        System.out.println("All tests have ended.");
+    }
+}
